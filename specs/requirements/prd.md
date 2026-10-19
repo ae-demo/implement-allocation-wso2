@@ -31,5 +31,5 @@ See [Product-wide](product-wide.md).
 
 ## Open Questions
 
-1. Should engagement travel expenses be their own feature, or part of Engagements? See Product-wide open questions.
+1. Currency for cross-country totals and the NetSuite push trigger — see Product-wide open questions.
 

@@ -6,7 +6,7 @@ Rules that apply to more than one feature.
 
 - P1 Users sign in through SSO via Thunder, which federates to Asgardeo. \[org default\] Applies to: all.
 - P2 Allocation cost is computed as the consultant's cost rate × allocated time over the allocation period. Applies to: F3, F4.
-- P3 Costs are reported in a single reporting currency; amounts in other currencies are converted using NetSuite's conversion. Applies to: F2, F4. *assumed*
+- P3 Amounts are held in the currency of the country the consultant travels to; NetSuite performs currency conversions. Applies to: F3, F4.
 
 ## Decisions
 
@@ -14,9 +14,10 @@ Rules that apply to more than one feature.
 - Employee information: People App — the business already uses it.
 - Finance system: NetSuite — the business already uses it; engagement travel-related expenses are pushed to it, and it performs currency conversions.
 - Identity provider: Asgardeo — the business already uses it, federated through Thunder.
+- When allocating a consultant to an engagement, the allocation is marked as requiring travel or not; travel-related expenses of the engagement are pushed to NetSuite.
 - Transactional email: an email service the business already uses; it notifies consultants and managers of allocations.
 
 ## Open Questions
 
-1. Which currency is the reporting currency, and in which currency are consultant cost rates held?
-2. Travel expenses: who records them on an engagement, and is the push to NetSuite automatic or triggered by a user? (Assumed to belong to Engagements and Cost tracking once settled.)
+1. When cost is totalled across engagements in different countries, which currency is the total shown in?
+2. Is the push of travel expenses to NetSuite automatic or user-triggered, and what did "travelled across the function" mean for who sees them?
