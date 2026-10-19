@@ -31,4 +31,5 @@ See [Product-wide](product-wide.md).
 
 ## Open Questions
 
-1. What each of the named services (People App, NetSuite, Asgardeo, an email service) is used for — see Product-wide open questions.
+1. Should engagement travel expenses be their own feature, or part of Engagements? See Product-wide open questions.
+
