@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 3,
+  "name": "WSO2 Allocation",
+  "entryScreen": "screen.engagements",
+  "roles": [
+    { "id": "EngagementManager", "name": "Engagement manager" },
+    { "id": "ResourceManager", "name": "Resource manager" },
+    { "id": "FinanceAnalyst", "name": "Finance" }
+  ],
+  "states": [
+    { "id": "state.default", "name": "Default" },
+    { "id": "state.empty", "name": "Nothing to show" },
+    { "id": "state.validation-error", "name": "Validation errors" },
+    { "id": "state.failed", "name": "NetSuite unavailable" }
+  ],
+  "screens": [
+    { "id": "screen.engagements", "name": "Engagements", "roleIds": ["EngagementManager", "ResourceManager", "FinanceAnalyst"] },
+    { "id": "screen.engagement-new", "name": "New engagement", "roleIds": ["EngagementManager"] },
+    { "id": "screen.engagement-detail", "name": "Engagement", "roleIds": ["EngagementManager", "ResourceManager", "FinanceAnalyst"] },
+    { "id": "screen.consultants", "name": "Consultants", "roleIds": ["ResourceManager", "FinanceAnalyst"] },
+    { "id": "screen.consultant-add", "name": "Add consultant", "roleIds": ["ResourceManager"] },
+    { "id": "screen.consultant-detail", "name": "Consultant", "roleIds": ["ResourceManager", "FinanceAnalyst"] },
+    { "id": "screen.allocations", "name": "Allocations", "roleIds": ["ResourceManager", "FinanceAnalyst"] },
+    { "id": "screen.allocation-new", "name": "New allocation", "roleIds": ["ResourceManager"] },
+    { "id": "screen.costs", "name": "Costs", "roleIds": ["EngagementManager", "ResourceManager", "FinanceAnalyst"] },
+    { "id": "screen.travel-expenses", "name": "Travel expenses", "roleIds": ["EngagementManager", "FinanceAnalyst"] },
+    { "id": "screen.account", "name": "Account", "roleIds": ["EngagementManager", "ResourceManager", "FinanceAnalyst"] },
+    { "id": "screen.signed-out", "name": "Signed out", "roleIds": ["EngagementManager", "ResourceManager", "FinanceAnalyst"] }
+  ],
+  "flows": [
+    { "id": "flow.create-engagement", "name": "Create an engagement", "roleId": "EngagementManager", "screenIds": ["screen.engagements", "screen.engagement-new", "screen.engagement-detail"] },
+    { "id": "flow.run-engagement", "name": "Edit an engagement and change its status", "roleId": "EngagementManager", "screenIds": ["screen.engagements", "screen.engagement-detail"] },
+    { "id": "flow.record-travel", "name": "Record and submit travel expenses", "roleId": "EngagementManager", "screenIds": ["screen.engagements", "screen.engagement-detail", "screen.travel-expenses"] },
+    { "id": "flow.engagement-costs", "name": "See the cost of my engagements", "roleId": "EngagementManager", "screenIds": ["screen.costs"] },
+    { "id": "flow.add-consultant", "name": "Add a consultant", "roleId": "ResourceManager", "screenIds": ["screen.consultants", "screen.consultant-add", "screen.consultant-detail"] },
+    { "id": "flow.set-rate", "name": "Set a cost rate", "roleId": "ResourceManager", "screenIds": ["screen.consultants", "screen.consultant-detail"] },
+    { "id": "flow.allocate", "name": "Allocate a consultant", "roleId": "ResourceManager", "screenIds": ["screen.allocations", "screen.allocation-new", "screen.allocations"] },
+    { "id": "flow.browse-engagements", "name": "Browse engagements", "roleId": "ResourceManager", "screenIds": ["screen.engagements", "screen.engagement-detail"] },
+    { "id": "flow.review-costs", "name": "Review cost", "roleId": "ResourceManager", "screenIds": ["screen.costs"] },
+    { "id": "flow.finance-engagements", "name": "Browse engagements and consultants", "roleId": "FinanceAnalyst", "screenIds": ["screen.engagements", "screen.engagement-detail", "screen.consultants", "screen.consultant-detail", "screen.allocations"] },
+    { "id": "flow.finance-costs", "name": "Review cost and travel expenses", "roleId": "FinanceAnalyst", "screenIds": ["screen.costs", "screen.travel-expenses"] }
+  ]
+}
