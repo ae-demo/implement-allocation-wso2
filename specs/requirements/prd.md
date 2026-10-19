@@ -31,4 +31,4 @@ See [Product-wide](product-wide.md).
 
 ## Open Questions
 
-1. Which third-party service (HR, finance/ERP, calendar, other) do you already use or must you use, and for what?
+1. What each of the named services (People App, NetSuite, Asgardeo, an email service) is used for — see Product-wide open questions.
