@@ -31,5 +31,5 @@ See [Product-wide](product-wide.md).
 
 ## Open Questions
 
-1. Currency for cross-country totals and the NetSuite push trigger — see Product-wide open questions.
+1. Who sees travel expenses — see Product-wide open questions.
 

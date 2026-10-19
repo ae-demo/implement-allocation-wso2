@@ -15,9 +15,9 @@ Rules that apply to more than one feature.
 - Finance system: NetSuite — the business already uses it; engagement travel-related expenses are pushed to it, and it performs currency conversions.
 - Identity provider: Asgardeo — the business already uses it, federated through Thunder.
 - When allocating a consultant to an engagement, the allocation is marked as requiring travel or not; travel-related expenses of the engagement are pushed to NetSuite.
+- Cost totals are reported in USD; travel expenses are pushed to NetSuite when the engagement manager submits them.
 - Transactional email: an email service the business already uses; it notifies consultants and managers of allocations.
 
 ## Open Questions
 
-1. When cost is totalled across engagements in different countries, which currency is the total shown in?
-2. Is the push of travel expenses to NetSuite automatic or user-triggered, and what did "travelled across the function" mean for who sees them?
+1. What did "travelled across the function" mean for who sees travel expenses?
