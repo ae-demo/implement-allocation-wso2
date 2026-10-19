@@ -10,3 +10,4 @@ Needs: F1, F2.
 
 - Each allocation is marked as requiring a travel request or not.
 - Consultants and managers are notified by email of allocations.
+
