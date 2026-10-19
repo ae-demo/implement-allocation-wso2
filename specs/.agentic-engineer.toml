@@ -1,0 +1,4 @@
+apiVersion = "agentic-engineer/v1"
+name = "implement-allocation-wso2"
+createdAt = "2026-10-19T09:49:12Z"
+idea = "I want to implement an allocation application for the WSO2 to create engagements, allocate consultants to the engagements and track the costs for those allocations"
