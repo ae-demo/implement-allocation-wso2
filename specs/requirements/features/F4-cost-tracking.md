@@ -26,6 +26,9 @@ Needs: F3.
 - Travel expenses are recorded by the engagement manager and pushed to NetSuite when the user submits them, not automatically.
 - Travel expenses are held in the currency of the engagement's country.
 - Cost shown covers allocations as planned, not actual hours worked.
+- Amounts in other currencies are converted to USD by NetSuite at the rate of the day the view is opened. *assumed*
+- Each travel expense has a date, a description, an amount and the allocation it belongs to; only allocations marked as requiring travel can carry expenses. *assumed*
+- If NetSuite cannot accept a submission, the expenses stay unsubmitted and can be submitted again. *assumed*
 
 ## Out of Scope
 

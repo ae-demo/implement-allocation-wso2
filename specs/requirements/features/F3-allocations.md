@@ -15,7 +15,6 @@ Needs: F1, F2.
 - F3.5 As a resource manager, I see all allocations of a consultant over time.
 - F3.6 As a resource manager, I see all allocations of an engagement.
 - F3.7 As an engagement manager, I see the allocations of my own engagements.
-- F3.8 As finance, I see all allocations. *assumed*
 - F3.9 As an engagement manager, I am notified by email when an allocation on my engagement is created, changed or ended.
 - F3.10 As a resource manager, I notify the consultant by email when they are allocated, changed or ended (sent by the system). *assumed*
 
@@ -29,3 +28,4 @@ Needs: F1, F2.
 - Allocations can be made only to active consultants and to Draft or Active engagements.
 - A consultant's cost rate applies as it stands on each day of the allocation (see Consultants). *assumed*
 - The standard working week is 40 hours. *assumed*
+

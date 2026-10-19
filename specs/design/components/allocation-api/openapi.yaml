@@ -1,0 +1,773 @@
+openapi: 3.0.3
+info:
+  title: Allocation API
+  version: 0.1.0
+  description: "Engagements, consultants and cost rates, allocations, cost reports and travel expenses."
+servers:
+  - url: /
+security:
+  - oauth2: []
+paths:
+  /me/engagements:
+    get:
+      operationId: listMyEngagements
+      summary: "The caller's engagements"
+      security:
+        - oauth2: [engagements:read]
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - name: status
+          in: query
+          schema: { $ref: '#/components/schemas/EngagementStatus' }
+      responses:
+        '200':
+          description: "A page of the caller's engagements"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EngagementList' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      operationId: createMyEngagement
+      summary: "Create an engagement owned by the caller"
+      security:
+        - oauth2: [engagements:create]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EngagementCreate' }
+      responses:
+        '201':
+          description: "The new Draft engagement"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Engagement' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /me/engagements/{engagementId}:
+    parameters:
+      - $ref: '#/components/parameters/EngagementId'
+    get:
+      operationId: getMyEngagement
+      summary: "One of the caller's engagements"
+      security:
+        - oauth2: [engagements:read]
+      responses:
+        '200':
+          description: "The engagement"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Engagement' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      operationId: updateMyEngagement
+      summary: "Edit one of the caller's engagements or change its status"
+      security:
+        - oauth2: [engagements:manage]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EngagementUpdate' }
+      responses:
+        '200':
+          description: "The updated engagement"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Engagement' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /me/engagements/{engagementId}/allocations:
+    parameters:
+      - $ref: '#/components/parameters/EngagementId'
+    get:
+      operationId: listMyEngagementAllocations
+      summary: "Allocations of one of the caller's engagements"
+      security:
+        - oauth2: [allocations:read]
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: "A page of allocations"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AllocationList' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /me/engagements/{engagementId}/travel-expenses:
+    parameters:
+      - $ref: '#/components/parameters/EngagementId'
+    get:
+      operationId: listMyTravelExpenses
+      summary: "Travel expenses of one of the caller's engagements"
+      security:
+        - oauth2: [travel-expenses:read]
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: "A page of travel expenses"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TravelExpenseList' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      operationId: createMyTravelExpense
+      summary: "Record a travel expense on one of the caller's engagements"
+      security:
+        - oauth2: [travel-expenses:record]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TravelExpenseCreate' }
+      responses:
+        '201':
+          description: "The recorded Draft expense"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TravelExpense' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /me/engagements/{engagementId}/travel-expenses/submit:
+    parameters:
+      - $ref: '#/components/parameters/EngagementId'
+    post:
+      operationId: submitMyTravelExpenses
+      summary: "Submit the Draft travel expenses of one of the caller's engagements to NetSuite"
+      security:
+        - oauth2: [travel-expenses:submit]
+      responses:
+        '200':
+          description: "How many expenses were submitted"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SubmitResult' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '502':
+          description: "NetSuite did not accept the submission; the expenses stay Draft"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /me/costs/engagements:
+    get:
+      operationId: listMyEngagementCosts
+      summary: "Cost of the caller's engagements, with each consultant's share"
+      security:
+        - oauth2: [costs:read]
+      parameters:
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+      responses:
+        '200':
+          description: "Cost report in USD"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CostReport' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '502':
+          description: "NetSuite could not convert currencies"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /engagements:
+    get:
+      operationId: listEngagements
+      summary: "Every engagement"
+      security:
+        - oauth2: [engagements:read-all]
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - name: status
+          in: query
+          schema: { $ref: '#/components/schemas/EngagementStatus' }
+      responses:
+        '200':
+          description: "A page of engagements"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EngagementList' }
+  /engagements/{engagementId}:
+    parameters:
+      - $ref: '#/components/parameters/EngagementId'
+    get:
+      operationId: getEngagement
+      summary: "Any engagement"
+      security:
+        - oauth2: [engagements:read-all]
+      responses:
+        '200':
+          description: "The engagement"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Engagement' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /employees:
+    get:
+      operationId: searchEmployees
+      summary: "Search People App employees to add as consultants"
+      security:
+        - oauth2: [consultants:manage]
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - name: q
+          in: query
+          schema: { type: string }
+          description: "Part of a name or email"
+      responses:
+        '200':
+          description: "A page of employees"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EmployeeList' }
+  /consultants:
+    get:
+      operationId: listConsultants
+      summary: "Every consultant with the rate in force today"
+      security:
+        - oauth2: [consultants:read-all]
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - name: q
+          in: query
+          schema: { type: string }
+          description: "Part of a name"
+        - name: active
+          in: query
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: "A page of consultants"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ConsultantList' }
+    post:
+      operationId: addConsultant
+      summary: "Add a People App employee as a consultant"
+      security:
+        - oauth2: [consultants:manage]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ConsultantCreate' }
+      responses:
+        '201':
+          description: "The new consultant"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Consultant' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+  /consultants/{consultantId}:
+    parameters:
+      - $ref: '#/components/parameters/ConsultantId'
+    get:
+      operationId: getConsultant
+      summary: "A consultant with employee information read live from People App"
+      security:
+        - oauth2: [consultants:read-all]
+      responses:
+        '200':
+          description: "The consultant"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Consultant' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      operationId: updateConsultant
+      summary: "Activate or deactivate a consultant"
+      security:
+        - oauth2: [consultants:manage]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ConsultantUpdate' }
+      responses:
+        '200':
+          description: "The updated consultant"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Consultant' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /consultants/{consultantId}/rates:
+    parameters:
+      - $ref: '#/components/parameters/ConsultantId'
+    get:
+      operationId: listConsultantRates
+      summary: "Rate history of a consultant, newest first"
+      security:
+        - oauth2: [consultants:read-all]
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - name: asOf
+          in: query
+          schema: { type: string, format: date }
+          description: "Date for which inForce is computed; today by default"
+      responses:
+        '200':
+          description: "A page of rates"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RateList' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      operationId: addConsultantRate
+      summary: "Set a new hourly cost rate effective from a date"
+      security:
+        - oauth2: [consultants:manage]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RateCreate' }
+      responses:
+        '201':
+          description: "The new rate"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Rate' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /allocations:
+    get:
+      operationId: listAllocations
+      summary: "Every allocation"
+      security:
+        - oauth2: [allocations:read-all]
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - name: consultantId
+          in: query
+          schema: { type: string }
+        - name: engagementId
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: "A page of allocations"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AllocationList' }
+    post:
+      operationId: createAllocation
+      summary: "Allocate a consultant to an engagement and notify by email"
+      security:
+        - oauth2: [allocations:manage]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AllocationCreate' }
+      responses:
+        '201':
+          description: "The new allocation, with any over-allocation warning"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Allocation' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+  /allocations/check:
+    post:
+      operationId: checkAllocation
+      summary: "Check a draft allocation for over-allocation without saving it"
+      security:
+        - oauth2: [allocations:manage]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AllocationCreate' }
+      responses:
+        '200':
+          description: "The consultant's peak load in the period"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AllocationCheck' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+  /allocations/{allocationId}:
+    parameters:
+      - name: allocationId
+        in: path
+        required: true
+        schema: { type: string }
+    patch:
+      operationId: updateAllocation
+      summary: "Change or end an allocation and notify by email"
+      security:
+        - oauth2: [allocations:manage]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AllocationUpdate' }
+      responses:
+        '200':
+          description: "The updated allocation"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Allocation' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /costs/engagements:
+    get:
+      operationId: listEngagementCosts
+      summary: "Cost of every engagement, with each consultant's share"
+      security:
+        - oauth2: [costs:read-all]
+      parameters:
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+      responses:
+        '200':
+          description: "Cost report in USD"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CostReport' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '502':
+          description: "NetSuite could not convert currencies"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /costs/consultants:
+    get:
+      operationId: listConsultantCosts
+      summary: "Cost of every consultant, with each engagement's share"
+      security:
+        - oauth2: [costs:read-all]
+      parameters:
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+      responses:
+        '200':
+          description: "Cost report in USD"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CostReport' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '502':
+          description: "NetSuite could not convert currencies"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /travel-expenses:
+    get:
+      operationId: listTravelExpenses
+      summary: "Every travel expense"
+      security:
+        - oauth2: [travel-expenses:read-all]
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - name: engagementId
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: "A page of travel expenses"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TravelExpenseList' }
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: /oauth2/authorize
+          tokenUrl: /oauth2/token
+          scopes:
+            engagements:read: "The caller's own engagements"
+            engagements:read-all: "Every engagement"
+            engagements:create: "Create an engagement owned by the caller"
+            engagements:manage: "Edit and change the status of the caller's own engagements"
+            consultants:read-all: "Every consultant and rate history"
+            consultants:manage: "Add consultants, deactivate them, set cost rates"
+            allocations:read: "Allocations of the caller's own engagements"
+            allocations:read-all: "Every allocation"
+            allocations:manage: "Create, check, change and end any allocation"
+            costs:read: "Cost of the caller's own engagements"
+            costs:read-all: "Cost of every engagement and consultant"
+            travel-expenses:read: "Travel expenses of the caller's own engagements"
+            travel-expenses:read-all: "Every travel expense"
+            travel-expenses:record: "Record a travel expense on the caller's own engagement"
+            travel-expenses:submit: "Submit the caller's own engagement's travel expenses"
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      schema: { type: integer, default: 20, maximum: 100 }
+    Offset:
+      name: offset
+      in: query
+      schema: { type: integer, default: 0 }
+    EngagementId:
+      name: engagementId
+      in: path
+      required: true
+      schema: { type: string }
+    ConsultantId:
+      name: consultantId
+      in: path
+      required: true
+      schema: { type: string }
+    From:
+      name: from
+      in: query
+      required: true
+      schema: { type: string, format: date }
+    To:
+      name: to
+      in: query
+      required: true
+      schema: { type: string, format: date }
+  responses:
+    BadRequest:
+      description: "The request is not valid"
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: "Not signed in or not permitted"
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: "No such record for the caller"
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: integer, description: "HTTP or application error code" }
+        message: { type: string, description: "short human-readable label" }
+        description: { type: string, description: "detailed explanation" }
+        moreInfo: { type: string, description: "URI to documentation" }
+    Page:
+      type: object
+      required: [count]
+      properties:
+        count: { type: integer, description: "total matching items" }
+        next: { type: string, nullable: true, description: "relative URI of the next page" }
+        previous: { type: string, nullable: true, description: "relative URI of the previous page" }
+    EngagementStatus:
+      type: string
+      enum: [DRAFT, ACTIVE, CLOSED]
+    Engagement:
+      type: object
+      required: [id, name, customer, country, status, ownerName]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        customer: { type: string }
+        country: { type: string }
+        status: { $ref: '#/components/schemas/EngagementStatus' }
+        ownerName: { type: string, description: "name of the engagement manager who owns it" }
+    EngagementCreate:
+      type: object
+      required: [name, customer, country]
+      properties:
+        name: { type: string }
+        customer: { type: string }
+        country: { type: string }
+    EngagementUpdate:
+      type: object
+      properties:
+        name: { type: string }
+        customer: { type: string }
+        country: { type: string }
+        status: { $ref: '#/components/schemas/EngagementStatus' }
+    EngagementList:
+      allOf:
+        - $ref: '#/components/schemas/Page'
+        - type: object
+          required: [data]
+          properties:
+            data: { type: array, items: { $ref: '#/components/schemas/Engagement' } }
+    Employee:
+      type: object
+      required: [email, name]
+      properties:
+        email: { type: string }
+        name: { type: string }
+        department: { type: string }
+        country: { type: string }
+        managerName: { type: string, nullable: true, description: "reporting lead" }
+    EmployeeList:
+      allOf:
+        - $ref: '#/components/schemas/Page'
+        - type: object
+          required: [data]
+          properties:
+            data: { type: array, items: { $ref: '#/components/schemas/Employee' } }
+    Rate:
+      type: object
+      required: [id, consultantId, hourlyRate, currency, effectiveFrom, inForce]
+      properties:
+        id: { type: string }
+        consultantId: { type: string }
+        hourlyRate: { type: number, description: "cost per hour in the rate's currency" }
+        currency: { type: string, description: "ISO 4217 code" }
+        effectiveFrom: { type: string, format: date }
+        inForce: { type: boolean, description: "true for the rate that applies on the asOf date" }
+    RateCreate:
+      type: object
+      required: [hourlyRate, currency, effectiveFrom]
+      properties:
+        hourlyRate: { type: number }
+        currency: { type: string }
+        effectiveFrom: { type: string, format: date }
+    RateList:
+      allOf:
+        - $ref: '#/components/schemas/Page'
+        - type: object
+          required: [data]
+          properties:
+            data: { type: array, items: { $ref: '#/components/schemas/Rate' } }
+    Consultant:
+      type: object
+      required: [id, name, employeeEmail, active]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        employeeEmail: { type: string }
+        active: { type: boolean }
+        currentRate: { allOf: [{ $ref: '#/components/schemas/Rate' }], nullable: true, description: "rate in force today" }
+        employee: { allOf: [{ $ref: '#/components/schemas/Employee' }], description: "live People App details; present on the single-consultant read" }
+    ConsultantCreate:
+      type: object
+      required: [employeeEmail]
+      properties:
+        employeeEmail: { type: string }
+    ConsultantUpdate:
+      type: object
+      properties:
+        active: { type: boolean }
+    ConsultantList:
+      allOf:
+        - $ref: '#/components/schemas/Page'
+        - type: object
+          required: [data]
+          properties:
+            data: { type: array, items: { $ref: '#/components/schemas/Consultant' } }
+    Allocation:
+      type: object
+      required: [id, engagementId, engagementName, consultantId, consultantName, startDate, endDate, percentage, travelRequired, status]
+      properties:
+        id: { type: string }
+        engagementId: { type: string }
+        engagementName: { type: string }
+        consultantId: { type: string }
+        consultantName: { type: string }
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+        percentage: { type: integer, minimum: 1, maximum: 100, description: "share of a 40 hour week" }
+        travelRequired: { type: boolean }
+        status: { type: string, enum: [ACTIVE, ENDED] }
+        warnings: { type: array, items: { type: string }, description: "over-allocation warnings; only on create" }
+    AllocationCreate:
+      type: object
+      required: [engagementId, consultantId, startDate, endDate, percentage, travelRequired]
+      properties:
+        engagementId: { type: string }
+        consultantId: { type: string }
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+        percentage: { type: integer, minimum: 1, maximum: 100 }
+        travelRequired: { type: boolean }
+    AllocationUpdate:
+      type: object
+      properties:
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+        percentage: { type: integer, minimum: 1, maximum: 100 }
+        travelRequired: { type: boolean }
+        status: { type: string, enum: [ACTIVE, ENDED] }
+    AllocationCheck:
+      type: object
+      required: [overAllocated, peakPercentage]
+      properties:
+        overAllocated: { type: boolean }
+        peakPercentage: { type: integer, description: "highest combined share of a week in the period" }
+        warnings: { type: array, items: { type: string } }
+    AllocationList:
+      allOf:
+        - $ref: '#/components/schemas/Page'
+        - type: object
+          required: [data]
+          properties:
+            data: { type: array, items: { $ref: '#/components/schemas/Allocation' } }
+    CostBreakdown:
+      type: object
+      required: [id, name, hours, costUsd]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        hours: { type: number }
+        costUsd: { type: number, description: "cost in USD" }
+    CostLine:
+      type: object
+      required: [id, name, hours, costUsd, breakdown]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        ownerName: { type: string, description: "engagement owner; engagement lines only" }
+        hours: { type: number }
+        costUsd: { type: number, description: "cost in USD" }
+        breakdown: { type: array, items: { $ref: '#/components/schemas/CostBreakdown' }, description: "consultants of an engagement, or engagements of a consultant" }
+    CostReport:
+      type: object
+      required: [from, to, currency, totalCostUsd, totalHours, data]
+      properties:
+        from: { type: string, format: date }
+        to: { type: string, format: date }
+        currency: { type: string, description: "always USD" }
+        totalCostUsd: { type: number }
+        totalHours: { type: number }
+        data: { type: array, items: { $ref: '#/components/schemas/CostLine' } }
+    TravelExpense:
+      type: object
+      required: [id, engagementId, engagementName, allocationId, consultantName, expenseDate, description, amount, currency, status]
+      properties:
+        id: { type: string }
+        engagementId: { type: string }
+        engagementName: { type: string }
+        allocationId: { type: string }
+        consultantName: { type: string }
+        expenseDate: { type: string, format: date }
+        description: { type: string }
+        amount: { type: number }
+        currency: { type: string, description: "currency of the engagement's country" }
+        status: { type: string, enum: [DRAFT, SUBMITTED] }
+        submittedAt: { type: string, format: date-time, nullable: true }
+    TravelExpenseCreate:
+      type: object
+      required: [allocationId, expenseDate, description, amount]
+      properties:
+        allocationId: { type: string, description: "an allocation of the engagement marked as requiring travel" }
+        expenseDate: { type: string, format: date }
+        description: { type: string }
+        amount: { type: number }
+    TravelExpenseList:
+      allOf:
+        - $ref: '#/components/schemas/Page'
+        - type: object
+          required: [data]
+          properties:
+            data: { type: array, items: { $ref: '#/components/schemas/TravelExpense' } }
+    SubmitResult:
+      type: object
+      required: [submittedCount]
+      properties:
+        submittedCount: { type: integer }

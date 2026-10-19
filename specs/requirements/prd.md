@@ -32,4 +32,5 @@ See [Product-wide](product-wide.md).
 ## Open Questions
 
 1. Who sees travel expenses — see Product-wide open questions.
+2. The organization's finance entity service already holds engagements and allocations. Should this product store them there, or keep its own records as designed?
 
