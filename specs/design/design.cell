@@ -1,0 +1,21 @@
+title WSO2 Allocation
+
+component allocation-web as "Allocation Web" web-application
+component allocation-api as "Allocation API" service
+component allocation-db as "Allocation DB" database
+
+east user-auth as "Thunder Auth" identity-server
+south hr-entity-service as "People App (HR Entity Service)" service
+south email-service as "Email Service" service
+south erp-service as "NetSuite" service
+
+north -> allocation-web
+north -> allocation-api
+
+allocation-web -> allocation-api
+allocation-web -> user-auth
+allocation-api -> user-auth
+allocation-api -> allocation-db
+allocation-api -> hr-entity-service
+allocation-api -> email-service
+allocation-api -> erp-service

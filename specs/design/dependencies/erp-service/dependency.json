@@ -1,0 +1,8 @@
+{
+  "name": "erp-service",
+  "resource": {
+    "name": "erp-service",
+    "description": "WSO2's finance system: receives an engagement's travel expenses when they are submitted and converts amounts between currencies.",
+    "provider": "NetSuite"
+  }
+}

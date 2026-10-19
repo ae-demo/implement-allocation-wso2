@@ -24,3 +24,4 @@ Engagement managers create and manage customer engagements that consultants are 
 ## Out of Scope
 
 - Engagement budgets, start and end dates (allocations carry the periods).
+
